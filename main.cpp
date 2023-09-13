@@ -3,20 +3,23 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DEBUG_MODE 0
+#define LOG_MODE 0
 
 
 char **ParseLines(char *buf);
+void WriteText(FILE *fp, char **text, int n_lines);
 
 int GetFileSize(FILE *file);
 int CntNewLine(char *buf);
 
-void BubbleSort (void ** const arr, int size, int (*cmp) (const char *, const char *));
+void BubbleSort (void ** const data, int size, int (*cmp) (const void *, const void *));
 void Swap_(void *aptr, void *bptr, int size);
+
+int cmpStr(const void * str1, const void * str2);
 
 
 int main() {
-
+    // -------------------------------------------
     FILE *fp = fopen("static/floyd.txt", "rb");
 
     int f_size = GetFileSize(fp);
@@ -27,17 +30,18 @@ int main() {
     int new_lines = CntNewLine(buf);
 
     fclose(fp);
+    // -------------------------------------------
 
-    #if DEBUG_MODE
+    #if LOG_MODE
     FILE *log = fopen("debug_log.log", "w");
     for (int i = 0; i < f_size  + 1; i++)
         fprintf(log, "buf[i] = %c (%d)\n", buf[i], buf[i]);
     fclose(log);
-    #endif // DEBUG_MODE
+    #endif // LOG_MODE
 
     char **text = ParseLines(buf);
 
-    #if DEBUG_MODE
+    #if LOG_MODE
     log = fopen("debug_log.log", "a");
     while (*text) {
         fprintf(log, "text = %p\n"
@@ -45,9 +49,15 @@ int main() {
         text++;
     }
     fclose(log);
-    #endif // DEBUG_MODE
+    #endif // LOG_MODE
 
-    BubbleSort((void **) text, new_lines, strcmp);
+    BubbleSort((void **) text, new_lines, cmpStr);
+
+    FILE *fout = fopen("out.txt", "w");
+
+    WriteText(fout, text, new_lines);
+
+    fclose(fout);
 
     return 0;
 }
@@ -80,6 +90,16 @@ char **ParseLines(char *buf) {
         return l_ptrs;
 }
 
+void WriteText(FILE *fp, char **text, int n_lines) {
+    assert (text);
+    assert (n_lines >= 0);
+
+    for (int i = 0; i < n_lines; i++) {
+        fprintf(fp, "%s\n", *text++);
+    }
+
+}
+
 int GetFileSize(FILE *file) {
     assert (file);
 
@@ -103,40 +123,41 @@ int CntNewLine(char *buf) {
     return n_cnt;
 }
 
-void BubbleSort (void ** const arr, int size, int (*cmp) (const char *, const char *)) {
-    #if DEBUG_MODE
+// TODO quick_sort + return enum
+void BubbleSort (void ** const data, int size, int (*cmp) (const void *a, const void *b)) {
 
-    assert (arr);
+    assert (data);
     assert (size >= 0);
 
-    #else
-
-    if (!arr) {
+    if (!data) {
         printf("BubbleSort: null pointer received\n");
         return ;
     }
 
     if (size < 0) {
-        printf("BubbleSort: size of array must be 0 or higher\n");
+        printf("BubbleSort: size of data array must be 0 or higher\n");
         return ;
     }
 
-    #endif // DEBUG_MODE
-
-    printf("test1: size = %d\n", size);
     for (int i = size - 1; i >= 0; i--) {
         for (int j = 0; j <= i; j++) {
 
             printf("i = %d, j = %d\n", i, j);
+            printf("comparing data[j]   = %s,\n"
+                   "          data[j+1] = %s\n", (char *)data[j], (char *) data[j+1]);
 
-            if ((*cmp)((char *) arr[j], (char *) arr[j + 1]) > 0) {
-                Swap_((char *) arr[j], (char *) arr[j + 1], sizeof(char *));
+            printf("cmp -> %d\n", cmp(((char **) data)[j], ((char **) data)[j + 1]));
 
+            if (cmp((char *) data[j], (char *) data[j + 1]) > 0) {
+                printf("swapping data[j]     = %p\n"
+                       "         data[j + 1] = %p\n", data[j], data[j + 1]);
+                Swap_(&data[j], &data[j + 1], sizeof(char *));
             }
         }
     }
 }
 
+// not very optimal
 void Swap_(void *aptr, void *bptr, int size)
 {
 
@@ -145,6 +166,16 @@ void Swap_(void *aptr, void *bptr, int size)
 
     while (size > 0)
     {
+
+        if (size >> 3 > 0)
+            step = sizeof(long long);
+        else if (size >> 2 > 0)
+            step = sizeof(int);
+        else if (size >> 1 > 0)
+            step = sizeof(short);
+        else
+            step = sizeof(char);
+
         memcpy(&temp, bptr, step);
         memcpy(bptr, aptr, step);
         memcpy(aptr, &temp, step);
@@ -155,4 +186,19 @@ void Swap_(void *aptr, void *bptr, int size)
         size -= step;
 
     }
+}
+
+// TOASK с (char **) не работает
+int cmpStr(const void * str1, const void * str2) {
+    assert(str1);
+    assert(str2);
+
+    #if LOG_MODE
+    FILE *log = fopen("debug_log.log", "a");
+    fprintf(log, "cmpStr: str1 = %p (%s)\n"
+                 "        str2 = %p (%s)\n", str1, str1, str2, str2); // TOASK если в %s подставлять *(char **)str, ничего не робит
+    fclose(log);
+    #endif //LOG_MODE
+
+    return strcmp((char *) str1, (char *) str2);
 }
