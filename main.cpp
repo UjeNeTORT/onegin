@@ -12,10 +12,13 @@ void WriteText(FILE *fp, char **text, int n_lines);
 int GetFileSize(FILE *file);
 int CntNewLine(char *buf);
 
-void BubbleSort (void ** const data, int size, int (*cmp) (const void *, const void *));
+void QuickSort(void * const data, int size, int el_size);
+void BubbleSort (void * const data, int size, int el_size, int (*cmp) (const void *a, const void *b));
 void Swap_(void *aptr, void *bptr, int size);
 
 int cmpStr(const void * str1, const void * str2);
+
+void *GetAddress(void * arr, int index, int el_size);
 
 
 int main() {
@@ -51,7 +54,7 @@ int main() {
     fclose(log);
     #endif // LOG_MODE
 
-    BubbleSort((void **) text, new_lines, cmpStr);
+    BubbleSort(text, new_lines, sizeof(char *), cmpStr);
 
     FILE *fout = fopen("out.txt", "w");
 
@@ -123,8 +126,22 @@ int CntNewLine(char *buf) {
     return n_cnt;
 }
 
+/**
+ * @param [out] data array we are going to sort
+ * @param [in]  size amount of elements in data
+*/
+void QuickSort(void * const data, int size, int el_size) {
+    return ;
+}
+
 // TODO quick_sort + return enum
-void BubbleSort (void ** const data, int size, int (*cmp) (const void *a, const void *b)) {
+/**
+ * @param [out] data    array to be sorted
+ * @param [in]  size    amount of elements in data
+ * @param [in]  el_size size of 1 element
+ * @param [in]  cmp     function-comparator
+*/
+void BubbleSort (void * const data, int size, int el_size, int (*cmp) (const void *a, const void *b)) {
 
     assert (data);
     assert (size >= 0);
@@ -140,18 +157,15 @@ void BubbleSort (void ** const data, int size, int (*cmp) (const void *a, const 
     }
 
     for (int i = size - 1; i >= 0; i--) {
-        for (int j = 0; j <= i; j++) {
+        for (int j = 0; j < size; j++) {
 
-            printf("i = %d, j = %d\n", i, j);
-            printf("comparing data[j]   = %s,\n"
-                   "          data[j+1] = %s\n", (char *)data[j], (char *) data[j+1]);
+            // TOASK когда тут было cmp(GetAdress(data, j, el_size), ...) почему он отсортировал не по возрастанию адресов?
+            if (cmp(*(char **) GetAddress(data, j,     el_size),
+                    *(char **) GetAddress(data, j + 1, el_size)) > 0) {
 
-            printf("cmp -> %d\n", cmp(((char **) data)[j], ((char **) data)[j + 1]));
+                Swap_(GetAddress(data, j,     el_size),
+                      GetAddress(data, j + 1, el_size), sizeof(void *));
 
-            if (cmp((char *) data[j], (char *) data[j + 1]) > 0) {
-                printf("swapping data[j]     = %p\n"
-                       "         data[j + 1] = %p\n", data[j], data[j + 1]);
-                Swap_(&data[j], &data[j + 1], sizeof(char *));
             }
         }
     }
@@ -189,7 +203,7 @@ void Swap_(void *aptr, void *bptr, int size)
 }
 
 // TOASK с (char **) не работает
-int cmpStr(const void * str1, const void * str2) {
+int cmpStr(const void *str1, const void *str2) {
     assert(str1);
     assert(str2);
 
@@ -200,5 +214,9 @@ int cmpStr(const void * str1, const void * str2) {
     fclose(log);
     #endif //LOG_MODE
 
-    return strcmp((char *) str1, (char *) str2);
+    return strcmp((const char *) str1, (const char *) str2);
+}
+
+void *GetAddress(void * arr, int index, int el_size) {
+    return (char *) arr + index * el_size;
 }
