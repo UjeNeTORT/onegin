@@ -1,38 +1,70 @@
 #include <assert.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "colors.h"
+
+/*
+TODO
+я путаюсь как передавать строки в функции *(const char **)str           DONE
+сделать скип знаков препинания                                          DONE
+assert (ptr1 != ptr2)
+БОЛЬШЕ const
+мусор в конец
+разбить на файлы
+сделать quick sort
+сделать чтобы функции ретернили enum (особенно компараторы для ошибок)
+size_t
+сделать cmd флаги
+
+*/
+
 #define LOG_MODE 0
 
+//TODO make cmd args for this purpose
+const char * const MASTERPIECE = "static/onegin.txt";
+
+enum CMP_RES {
+    CMP_RES_SMLLR = -1,
+    CMP_RES_EQL = 0,
+    CMP_RES_BGGR = 1,
+    ERR_NULL_PTR
+};
 
 char **ParseLines(char *buf);
-void WriteText(FILE *fp, char **text, int n_lines);
+void WriteText(FILE *fp, const char **text, int n_lines);
 
 int GetFileSize(FILE *file);
-int CntNewLine(char *buf);
+int CntNewLine(const char *buf);
 
 void QuickSort(void * const data, int size, int el_size);
 void BubbleSort (void * const data, int size, int el_size, int (*cmp) (const void *a, const void *b));
 void Swap_(void *aptr, void *bptr, int size);
 
-int cmpStr(const void * str1, const void * str2);
+int cmpStr (const void * str1, const void * str2);
+int cmpRStr(const void *str1, const void *str2);
 
-void *GetAddress(void * arr, int index, int el_size);
+void *GetAddress(const void *arr, int index, int el_size);
+const char *DelNotAl(const char *str, int len);
+const char *DelNotAlR(const char *str, int len);
 
 
 int main() {
-    // -------------------------------------------
-    FILE *fp = fopen("static/floyd.txt", "rb");
+    // -------------- TO FUNCTION ----------------
+    FILE *fin = fopen(MASTERPIECE, "rb");
 
-    int f_size = GetFileSize(fp);
+    int f_size = GetFileSize(fin);
 
     char *buf = (char *) calloc(f_size + 1, sizeof(char));
 
-    fread(buf, sizeof(char), f_size, fp);
+    assert (buf);
+
+    fread(buf, sizeof(char), f_size, fin);
     int new_lines = CntNewLine(buf);
 
-    fclose(fp);
+    fclose(fin);
     // -------------------------------------------
 
     #if LOG_MODE
@@ -44,6 +76,8 @@ int main() {
 
     char **text = ParseLines(buf);
 
+    assert (text);
+
     #if LOG_MODE
     log = fopen("debug_log.log", "a");
     while (*text) {
@@ -54,12 +88,12 @@ int main() {
     fclose(log);
     #endif // LOG_MODE
 
-    BubbleSort(text, new_lines, sizeof(char *), cmpStr);
+    BubbleSort(text, new_lines, sizeof(char *), cmpRStr);
 
     FILE *fout = fopen("out.txt", "w");
 
-    WriteText(fout, text, new_lines);
-
+    WriteText(fout, (const char **) text, new_lines);
+    printf("vse\n"); //todelete
     fclose(fout);
 
     return 0;
@@ -67,6 +101,11 @@ int main() {
 
 char **ParseLines(char *buf) {
     assert (buf);
+
+    if (!buf) {
+        fprintf(stderr, "ParseLines: null pointer to buf received\n");
+        return NULL;
+    }
 
     int n_lines = CntNewLine(buf);
 
@@ -93,9 +132,25 @@ char **ParseLines(char *buf) {
         return l_ptrs;
 }
 
-void WriteText(FILE *fp, char **text, int n_lines) {
+void WriteText(FILE *fp, const char **text, int n_lines) {
+    assert (fp);
     assert (text);
     assert (n_lines >= 0);
+
+    if (!fp) {
+        fprintf(stderr, "WriteText: null pointer to file received\n");
+        return ;
+    }
+
+    if (!text) {
+        fprintf(stderr, "WriteText: null pointer to text received\n");
+        return ;
+    }
+
+    if (n_lines < 0) {
+        fprintf(stderr, "WriteText: n_lines < 0\n");
+        return ;
+    }
 
     for (int i = 0; i < n_lines; i++) {
         fprintf(fp, "%s\n", *text++);
@@ -106,6 +161,11 @@ void WriteText(FILE *fp, char **text, int n_lines) {
 int GetFileSize(FILE *file) {
     assert (file);
 
+    if (!file) {
+        fprintf(stderr, "GetFileSize: null instead of file received\n");
+        // return NULL;
+    }
+
     int res = 0;
 
     fseek(file, 0, SEEK_END);
@@ -115,8 +175,13 @@ int GetFileSize(FILE *file) {
     return res;
 }
 
-int CntNewLine(char *buf) {
+int CntNewLine(const char *buf) {
     assert (buf);
+
+    if (!buf) {
+        fprintf(stderr, "CntNewLine: null pointer to buffer received\n");
+        // return NULL;
+    }
 
     int n_cnt = 0;
 
@@ -159,9 +224,9 @@ void BubbleSort (void * const data, int size, int el_size, int (*cmp) (const voi
     for (int i = size - 1; i >= 0; i--) {
         for (int j = 0; j < size; j++) {
 
-            // TOASK когда тут было cmp(GetAdress(data, j, el_size), ...) почему он отсортировал не по возрастанию адресов?
-            if (cmp(*(char **) GetAddress(data, j,     el_size),
-                    *(char **) GetAddress(data, j + 1, el_size)) > 0) {
+            // TOASK когда тут было cmp(&GetAdress(data, j, el_size), ...) почему он отсортировал не по возрастанию адресов?
+            if (cmp((const void *) GetAddress(data, j,     el_size),
+                    (const void *) GetAddress(data, j + 1, el_size)) > 0) {
 
                 Swap_(GetAddress(data, j,     el_size),
                       GetAddress(data, j + 1, el_size), sizeof(void *));
@@ -172,8 +237,20 @@ void BubbleSort (void * const data, int size, int el_size, int (*cmp) (const voi
 }
 
 // not very optimal
-void Swap_(void *aptr, void *bptr, int size)
-{
+void Swap_(void *aptr, void *bptr, int size) {
+
+    assert(aptr);
+    assert(bptr);
+
+    if (!aptr) {
+        fprintf(stderr, "Swap_: null pointer to a\n");
+        return ;
+    }
+
+    if (!bptr) {
+        fprintf(stderr, "Swap_: null pointer to b\n");
+        return ;
+    }
 
     unsigned long long temp = 0;
     int step = 0;
@@ -202,10 +279,26 @@ void Swap_(void *aptr, void *bptr, int size)
     }
 }
 
-// TOASK с (char **) не работает
+// TOASK с (char **) не работает (answer: const ставить надо правильно)
 int cmpStr(const void *str1, const void *str2) {
     assert(str1);
     assert(str2);
+
+    if (!str1) {
+        fprintf(stderr, "cmpStr: null pointer to a-str received");
+        // return NULL;
+    }
+
+    if (!str2) {
+        fprintf(stderr, "cmpStr: null pointer to b-str received");
+        // return NULL;
+    }
+
+    int len1 = strlen(*(const char * const *) str1);
+    int len2 = strlen(*(const char * const *) str2);
+
+   if ((str1 = DelNotAl((const char *) str1, len1)) == NULL) return -1;
+   if ((str2 = DelNotAl((const char *) str2, len2)) == NULL) return 1;
 
     #if LOG_MODE
     FILE *log = fopen("debug_log.log", "a");
@@ -214,9 +307,115 @@ int cmpStr(const void *str1, const void *str2) {
     fclose(log);
     #endif //LOG_MODE
 
-    return strcmp((const char *) str1, (const char *) str2);
+    if (!str1 || !str2) return 0;
+
+    return strcmp(*(const char * const *) str1, *(const char * const *) str2);
 }
 
-void *GetAddress(void * arr, int index, int el_size) {
-    return (char *) arr + index * el_size;
+int cmpRStr(const void *str1, const void *str2) {
+    assert (str1);
+    assert (str2);
+
+    if (!str1) {
+        fprintf(stderr, "cmpStr: null pointer to a-str received");
+        // return NULL;
+    }
+
+    if (!str2) {
+        fprintf(stderr, "cmpStr: null pointer to b-str received");
+        // return NULL;
+    }
+
+    const char *s1 = *(char * const *) str1;
+    const char *s2 = *(char * const *) str2;
+
+    int len1 = strlen(*(const char * const *) str1);
+    int len2 = strlen(*(const char * const *) str2);
+
+    s1 += len1;
+    s2 += len2;
+
+    s1 = DelNotAlR(s1, len1);
+    s2 = DelNotAlR(s2, len2);
+
+    while (len1 && len2 && *s1 == *s2) {
+        s1--;
+        s2--;
+        len1--;
+        len2--;
+    }
+
+    if (len1 && !len2) return 1;
+
+    if (!len1 && len2) return -1;
+
+    if (!s1 || !s2) return 0;
+
+    return *s1 - *s2;
+
+}
+
+void *GetAddress(const void *arr, int index, int el_size) {
+    assert (arr);
+    assert (index >= 0);
+    assert (el_size > 0);
+
+    if (!arr) {
+        fprintf(stderr, "GetAddress: null ptr to an arr received\n");
+        return NULL;
+    }
+
+    if (index < 0) {
+        fprintf(stderr, "GetAddress: invalid index received\n");
+        return NULL;
+    }
+
+    if (el_size <= 0) {
+        fprintf(stderr, "GetAddress: invalid el_size received\n");
+        return NULL;
+    }
+
+    return (void *) ((const char *) arr + index * el_size);
+}
+
+const char *DelNotAl(const char *str, int len) {
+    assert(str);
+    assert (len >= 0);
+
+    if (!str) {
+        fprintf(stderr, "DelNotAl: null ptr to str received\n");
+        return NULL;
+    }
+
+    if (len < 0) {
+        fprintf(stderr, "DelNotAl: len less than 0 received\n");
+        return NULL;
+    }
+
+    while (len-- > 0 && !isalpha(*str)) {
+        str++;
+    }
+
+    return (len > 0) ? str : (const char *) NULL;
+}
+
+const char *DelNotAlR(const char *str, int len) {
+    assert(str);
+    assert (len >= 0);
+
+    if (!str) {
+        fprintf(stderr, "DelNotAl: null ptr to str received\n");
+        return NULL;
+    }
+
+    if (len < 0) {
+        fprintf(stderr, "DelNotAl: len less than 0 received\n");
+        return NULL;
+    }
+
+    while (len-- > 0 && !isalpha(*str)) {
+        str--;
+    }
+
+    return (len > 0) ? str : (const char *) NULL;
 }
