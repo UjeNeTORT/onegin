@@ -17,6 +17,7 @@ assert (ptr1 != ptr2)
 доки
 (мусор в конец)
 разбить на файлы                                                        DONE
+free
 а если файл прочитали в режиме без rb
 сделать quick sort
 сделать чтобы функции ретернили enum (особенно компараторы для ошибок)
@@ -27,51 +28,55 @@ size_t
 //TODO make cmd args for this purpose
 const char * const MASTERPIECE = "static/onegin.txt";
 
-int ReadText(const char * const file, const char ***text);
+int ReadText(const char * const file, const char ***text, char **buf);
 int ReadBuf(const char * const file, char **buf);
+void WriteText(const char * const file, const char * const mode, const char **text, int n_lines);
+void WriteBuf(const char * const file, const char * const mode, const char *buf, int n_lines);
+
 const char **ParseLines(char *buf);
-void WriteText(FILE *fp, const char **text, int n_lines);
-void WriteBuf(FILE *fp, const char *buf, int n_lines);
+void FreeText(const char **text);
 
 int GetFileSize(FILE *file);
 int CntNewLine(const char *buf);
 
 int main() {
 
+    char *buf = NULL;
     const char **text = NULL;
-    int new_lines = ReadText(MASTERPIECE, &text);
+    int new_lines = ReadText(MASTERPIECE, &text, &buf);
 
-    // -------------- TO FUNCTION ----------------
-    FILE *fout = fopen("out.txt", "w");
-
-    WriteText(fout, text, new_lines);
+    // -------------------------------------------
 
     BubbleSort(text, new_lines, sizeof(char *), cmpStr);
 
-    WriteText(fout, text, new_lines);
+    WriteText("out.txt", "w", text, new_lines);
 
     printf("vse\n"); //todelete
 
+    // -------------------------------------------
+
     BubbleSort(text, new_lines, sizeof(char *), cmpRStr);
 
-    WriteText(fout, text, new_lines);
+    WriteText("out.txt", "a", text, new_lines);
 
     printf("Rvse\n"); //todelete
 
-    fclose(fout);
     // -------------------------------------------
+
+    WriteBuf("out.txt", "a", buf, new_lines);
+
+    printf("bufvse\n"); //todelete
 
     return 0;
 }
 
-int ReadText(const char * const file, const char ***text) {
-    char *buf = NULL;
+int ReadText(const char * const file, const char ***text, char **buf) {
 
-    ReadBuf(file, &buf);
+    ReadBuf(file, buf);
 
-    int new_lines = CntNewLine(buf);
+    int new_lines = CntNewLine(*buf);
 
-    *text = ParseLines(buf);
+    *text = ParseLines(*buf);
 
     return new_lines;
 }
@@ -123,12 +128,18 @@ const char **ParseLines(char *buf) {
         return (const char **) l_ptrs;
 }
 
-void WriteText(FILE *fp, const char **text, int n_lines) {
-    assert (fp);
+void FreeText(const char **text) {
+    assert (text);
+
+    free(text);
+}
+
+void WriteText(const char * const file, const char * const mode, const char **text, int n_lines) {
+    assert (file);
     assert (text);
     assert (n_lines >= 0);
 
-    if (!fp) {
+    if (!file) {
         fprintf(stderr, "WriteText: null pointer to file received\n");
         return ;
     }
@@ -143,15 +154,30 @@ void WriteText(FILE *fp, const char **text, int n_lines) {
         return ;
     }
 
-    for (int i = 0; i < n_lines; i++) {
-        fprintf(fp, "%s\n", *text++);
-    }
+    FILE *fout = fopen(file, mode);
+
+    while (n_lines-- > 0)
+        fprintf(fout, "%s\n", *text++);
+
+    fclose(fout);
+
 }
 
-void WriteBuf(FILE *fp, const char *buf, int n_lines) {
-    assert (fp);
+void WriteBuf(const char * const file, const char * const mode, const char *buf, int n_lines) {
+    assert (file);
     assert (buf);
     assert (n_lines >= 0);
+
+    FILE *fout = fopen(file, mode);
+
+    while (n_lines-- > 0) {
+        fprintf(fout, "%s\n", buf);
+
+        // skip string + \0 + \n
+        buf += strlen(buf) + 2;
+    }
+
+    fclose(fout);
 }
 
 int GetFileSize(FILE *file) {
