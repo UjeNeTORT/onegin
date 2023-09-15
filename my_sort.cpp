@@ -103,18 +103,18 @@ int cmpStr(const void *str1, const void *str2) {
         // return NULL;
     }
 
-    const char *s1 = *(const char **) str1;
-    const char *s2 = *(const char **) str2;
+    const char *s1 = *(char * const *) str1;
+    const char *s2 = *(char * const *) str2;
 
     int len1 = strlen(s1);
     int len2 = strlen(s2);
 
-    s1 = DelNotAl(s1, len1);
-    s2 = DelNotAl(s2, len2);
+    s1 = DelNotAlpha(s1, len1);
+    s2 = DelNotAlpha(s2, len2);
 
     if (!str1 || !str2) return 0;
 
-    return strcmp(*(char * const *) str1, *(char * const *) str2);
+    return strcmp(s1, s2);
 }
 
 int cmpRStr(const void *str1, const void *str2) {
@@ -123,17 +123,17 @@ int cmpRStr(const void *str1, const void *str2) {
 
     if (!str1) {
         fprintf(stderr, "cmpStr: null pointer to a-str received");
-        // return NULL;
+
     }
 
     if (!str2) {
         fprintf(stderr, "cmpStr: null pointer to b-str received");
-        // return NULL;
+
     }
 
 
-    const char *s1 = *(const char **) str1;
-    const char *s2 = *(const char **) str2;
+    const char *s1 = *(char * const *) str1;
+    const char *s2 = *(char * const *) str2;
 
     int len1 = strlen(s1);
     int len2 = strlen(s2);
@@ -142,8 +142,8 @@ int cmpRStr(const void *str1, const void *str2) {
     s2 += len2;
 
 
-    s1 = DelNotAlR(s1, len1);
-    s2 = DelNotAlR(s2, len2);
+    s1 = DelNotAlphaR(s1, len1);
+    s2 = DelNotAlphaR(s2, len2);
 
     while (len1 && len2 && *s1 == *s2) {
         s1--;
@@ -185,7 +185,7 @@ void *GetAddress(void *arr, int index, int el_size) {
     return (char *) arr + index * el_size;
 }
 
-const char *DelNotAl(const char *str, int len) {
+const char *DelNotAlpha(const char *str, int len) {
     assert (str);
     assert (len >= 0);
 
@@ -206,18 +206,18 @@ const char *DelNotAl(const char *str, int len) {
     return str;
 }
 
-const char *DelNotAlR(const char *str, int len) {
+const char *DelNotAlphaR(const char *str, int len) {
     assert(str);
     assert (len >= 0);
 
     if (!str) {
         fprintf(stderr, "DelNotAl: null ptr to str received\n");
-        return NULL;
+
     }
 
     if (len < 0) {
         fprintf(stderr, "DelNotAl: len less than 0 received\n");
-        return NULL;
+
     }
 
     while (len-- > 0 && !isalpha(*str)) {

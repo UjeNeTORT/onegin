@@ -11,21 +11,18 @@
 TODO
 я путаюсь как передавать строки в функции *(const char **)str           DONE
 сделать скип знаков препинания                                          DONE
-assert (ptr1 != ptr2)
 БОЛЬШЕ const                                                            Почти DONE (const void * -> const char ** => warning)
-вывод буфера
+вывод буфера                                                            DONE
 доки
-(мусор в конец)
 разбить на файлы                                                        DONE
-free
+free                                                                    DONE
 а если файл прочитали в режиме без rb
-сделать quick sort
 сделать чтобы функции ретернили enum (особенно компараторы для ошибок)
 size_t
-сделать cmd флаги
+тесты
+сделать quick sort
 */
 
-//TODO make cmd args for this purpose
 const char * const MASTERPIECE = "static/onegin.txt";
 
 int ReadText(const char * const file, const char ***text, char **buf);
@@ -34,7 +31,8 @@ void WriteText(const char * const file, const char * const mode, const char **te
 void WriteBuf(const char * const file, const char * const mode, const char *buf, int n_lines);
 
 const char **ParseLines(char *buf);
-void FreeText(const char **text);
+void FreeText(void *text);
+void FreeBuf(void *buf);
 
 int GetFileSize(FILE *file);
 int CntNewLine(const char *buf);
@@ -67,10 +65,16 @@ int main() {
 
     printf("bufvse\n"); //todelete
 
+    FreeText(text);
+    FreeBuf(buf);
+
     return 0;
 }
 
 int ReadText(const char * const file, const char ***text, char **buf) {
+    assert (file);
+    assert (text);
+    assert (buf);
 
     ReadBuf(file, buf);
 
@@ -82,6 +86,9 @@ int ReadText(const char * const file, const char ***text, char **buf) {
 }
 
 int ReadBuf(const char * const file, char **buf) {
+    assert (file);
+    assert (buf);
+
     FILE *fin = fopen(file, "rb");
 
     int f_size = GetFileSize(fin);
@@ -128,10 +135,16 @@ const char **ParseLines(char *buf) {
         return (const char **) l_ptrs;
 }
 
-void FreeText(const char **text) {
+void FreeText(void *text) {
     assert (text);
 
     free(text);
+}
+
+void FreeBuf(void *buf) {
+    assert (buf);
+
+    free(buf);
 }
 
 void WriteText(const char * const file, const char * const mode, const char **text, int n_lines) {
