@@ -47,11 +47,11 @@ void *GetAddress(void *arr, int index, int el_size);
 /**
  *
 */
-char *DelNotAl (char *str, int len);
+const char *DelNotAl (const char *str, int len);
 
 /**
  *
 */
-char *DelNotAlR(char *str, int len);
+const char *DelNotAlR(const char *str, int len);
 
 #endif // MY_SORT_H

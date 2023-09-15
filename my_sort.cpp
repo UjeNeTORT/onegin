@@ -6,6 +6,7 @@
 
 #include "my_sort.h"
 
+
 // NOT FINISHED
 void QuickSort (void *data, int size, int el_size, int (*cmp) (const void *a, const void *b)) {
     assert (data);
@@ -25,7 +26,7 @@ void BubbleSort (void *data, int size, int el_size, int (*cmp) (const void *a, c
     assert (size >= 0);
 
     if (!data) {
-        printf("%s: null pointer received\n", __func__);
+        printf("BubbleSort: null pointer received\n");
         return ;
     }
 
@@ -102,16 +103,18 @@ int cmpStr(const void *str1, const void *str2) {
         // return NULL;
     }
 
-    // -------------- SEG FAULT ----------------
-    // int len1 = strlen(*(const char * const *) str1);
-    // int len2 = strlen(*(const char * const *) str2);
-    //
-    // if ((str1 = DelNotAl((char *) str1, len1)) == NULL) return -1;
-    // if ((str2 = DelNotAl((char *) str2, len2)) == NULL) return 1;
-    // -----------------------------------------
+    const char *s1 = *(const char **) str1;
+    const char *s2 = *(const char **) str2;
+
+    int len1 = strlen(s1);
+    int len2 = strlen(s2);
+
+    s1 = DelNotAl(s1, len1);
+    s2 = DelNotAl(s2, len2);
+
     if (!str1 || !str2) return 0;
 
-    return strcmp(*(char **) str1, *(char **) str2);
+    return strcmp(*(char * const *) str1, *(char * const *) str2);
 }
 
 int cmpRStr(const void *str1, const void *str2) {
@@ -129,8 +132,8 @@ int cmpRStr(const void *str1, const void *str2) {
     }
 
 
-    char *s1 = *(char **) str1;
-    char *s2 = *(char **) str2;
+    const char *s1 = *(const char **) str1;
+    const char *s2 = *(const char **) str2;
 
     int len1 = strlen(s1);
     int len2 = strlen(s2);
@@ -182,28 +185,28 @@ void *GetAddress(void *arr, int index, int el_size) {
     return (char *) arr + index * el_size;
 }
 
-char *DelNotAl(char *str, int len) {
+const char *DelNotAl(const char *str, int len) {
     assert (str);
     assert (len >= 0);
 
     if (!str) {
         fprintf(stderr, "DelNotAl: null ptr to str received\n");
-        return NULL;
+
     }
 
     if (len < 0) {
         fprintf(stderr, "DelNotAl: len less than 0 received\n");
-        return NULL;
+
     }
 
     while (len-- > 0 && !isalpha(*str)) {
         str++;
     }
 
-    return (len > 0) ? str : NULL;
+    return str;
 }
 
-char *DelNotAlR(char *str, int len) {
+const char *DelNotAlR(const char *str, int len) {
     assert(str);
     assert (len >= 0);
 
@@ -221,5 +224,5 @@ char *DelNotAlR(char *str, int len) {
         str--;
     }
 
-    return (len > 0) ? str : NULL;
+    return str;
 }

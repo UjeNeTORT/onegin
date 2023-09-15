@@ -12,11 +12,12 @@ TODO
 я путаюсь как передавать строки в функции *(const char **)str           DONE
 сделать скип знаков препинания                                          DONE
 assert (ptr1 != ptr2)
-БОЛЬШЕ const                                                            POLNY BAN
+БОЛЬШЕ const                                                            Почти DONE (const void * -> const char ** => warning)
 вывод буфера
 доки
 (мусор в конец)
 разбить на файлы                                                        DONE
+а если файл прочитали в режиме без rb
 сделать quick sort
 сделать чтобы функции ретернили enum (особенно компараторы для ошибок)
 size_t
@@ -30,6 +31,7 @@ int ReadText(const char * const file, const char ***text);
 int ReadBuf(const char * const file, char **buf);
 const char **ParseLines(char *buf);
 void WriteText(FILE *fp, const char **text, int n_lines);
+void WriteBuf(FILE *fp, const char *buf, int n_lines);
 
 int GetFileSize(FILE *file);
 int CntNewLine(const char *buf);
@@ -144,6 +146,12 @@ void WriteText(FILE *fp, const char **text, int n_lines) {
     for (int i = 0; i < n_lines; i++) {
         fprintf(fp, "%s\n", *text++);
     }
+}
+
+void WriteBuf(FILE *fp, const char *buf, int n_lines) {
+    assert (fp);
+    assert (buf);
+    assert (n_lines >= 0);
 }
 
 int GetFileSize(FILE *file) {
