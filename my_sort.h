@@ -1,12 +1,13 @@
 #ifndef MY_SORT_H
 #define MY_SORT_H
 
-enum CMP_RES {
-    CMP_RES_SMLLR = -1,
-    CMP_RES_EQL = 0,
-    CMP_RES_BGGR = 1,
-    ERR_NULL_PTR
-};
+/**
+ * @param [out] data    array to be sorted
+ * @param [in]  size    amount of elements in data
+ * @param [in]  el_size size of 1 element
+ * @param [in]  cmp     function-comparator
+*/
+void QuickSort  (void *data, int size, size_t el_size, int (*cmp) (const void *a, const void *b));
 
 /**
  * @param [out] data    array to be sorted
@@ -14,43 +15,35 @@ enum CMP_RES {
  * @param [in]  el_size size of 1 element
  * @param [in]  cmp     function-comparator
 */
-void QuickSort  (void *data, int size, int el_size, int (*cmp) (const void *a, const void *b));
+void BubbleSort (void *data, int size, size_t el_size, int (*cmp) (const void *a, const void *b));
 
 /**
- * @param [out] data    array to be sorted
- * @param [in]  size    amount of elements in data
- * @param [in]  el_size size of 1 element
- * @param [in]  cmp     function-comparator
-*/
-void BubbleSort (void *data, int size, int el_size, int (*cmp) (const void *a, const void *b));
-
-/**
- *
+ * @brief giga swap
 */
 void Swap_(void *aptr, void *bptr, int size);
 
 /**
- *
+ * @brief lexic cmp strings (asc order)
 */
 int cmpStr (const void *str1, const void *str2);
 
 /**
- *
+ * @brief lexicog cmp strings from their endings (asc order)
 */
 int cmpRStr(const void *str1, const void *str2);
 
 /**
- *
+ * @brief get address of el index of arr
 */
-void *GetAddress(void *arr, int index, int el_size);
+void *GetAddress(void *arr, int index, size_t el_size);
 
 /**
- *
+ * @brief set pointer to a position where the first letter is
 */
 const char *DelNotAlpha (const char *str, int len);
 
 /**
- *
+ * @brief set pointer to a position (from the back) where the first letter is
 */
 const char *DelNotAlphaR(const char *str, int len);
 

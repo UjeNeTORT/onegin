@@ -8,7 +8,7 @@
 
 
 // NOT FINISHED
-void QuickSort (void *data, int size, int el_size, int (*cmp) (const void *a, const void *b)) {
+void QuickSort (void *data, int size, size_t el_size, int (*cmp) (const void *a, const void *b)) {
     assert (data);
     assert (size > 0);
     assert (el_size > 0);
@@ -20,7 +20,7 @@ void QuickSort (void *data, int size, int el_size, int (*cmp) (const void *a, co
 }
 
 // TODO quick_sort + return enum
-void BubbleSort (void *data, int size, int el_size, int (*cmp) (const void *a, const void *b)) {
+void BubbleSort (void *data, int size, size_t el_size, int (*cmp) (const void *a, const void *b)) {
 
     assert (data);
     assert (size >= 0);
@@ -162,7 +162,7 @@ int cmpRStr(const void *str1, const void *str2) {
 
 }
 
-void *GetAddress(void *arr, int index, int el_size) {
+void *GetAddress(void *arr, int index, size_t el_size) {
     assert (arr);
     assert (index >= 0);
     assert (el_size > 0);
