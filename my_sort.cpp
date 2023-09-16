@@ -69,6 +69,8 @@ void QuickSort (void *data, int size, size_t el_size, int (*cmp) (const void *a,
     return ;
 }
 
+//----------------------------------------------------
+
 void BubbleSort (void *data, int size, size_t el_size, int (*cmp) (const void *a, const void *b)) {
 
     assert (data);
@@ -110,6 +112,8 @@ void BubbleSort (void *data, int size, size_t el_size, int (*cmp) (const void *a
     }
 }
 
+//----------------------------------------------------
+
 // swaps your braincells when you try to understand what it does
 void Swap(void *aptr, void *bptr, int size) {
 
@@ -149,6 +153,7 @@ void Swap(void *aptr, void *bptr, int size) {
     }
 }
 
+//----------------------------------------------------
 
 int cmpStr(const void *str1, const void *str2) {
 
@@ -178,6 +183,8 @@ int cmpStr(const void *str1, const void *str2) {
 
     return strcmp(s1, s2);
 }
+
+//----------------------------------------------------
 
 int cmpRStr(const void *str1, const void *str2) {
 
@@ -225,6 +232,8 @@ int cmpRStr(const void *str1, const void *str2) {
 
 }
 
+//----------------------------------------------------
+
 void *GetAddress(void *arr, int index, size_t el_size) {
 
     assert (arr);
@@ -249,6 +258,8 @@ void *GetAddress(void *arr, int index, size_t el_size) {
     return (char *) arr + index * el_size;
 }
 
+//----------------------------------------------------
+
 const char *DelNotAlpha(const char *str, int len) {
 
     assert (str);
@@ -270,6 +281,8 @@ const char *DelNotAlpha(const char *str, int len) {
 
     return str;
 }
+
+//----------------------------------------------------
 
 const char *DelNotAlphaR(const char *str, int len) {
 

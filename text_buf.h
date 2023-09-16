@@ -39,10 +39,11 @@ void WriteBuf(const char * const file, const char * const mode, const char *buf,
  * @brief set all \rs to \0 (if no \r, set \ns to \0)
  *
  * @param [in] buf     buffer
+ * @param [in] n_lines number of lines
  *
  * @return pointer to array of pointers to different parts (new lines) of buffer
 */
-char **ParseLines(char *buf);
+char **ParseLines(char *buf, size_t n_lines);
 
 /**
  * @brief free text (шок)

@@ -6,6 +6,7 @@
 
 #include "text_buf.h"
 
+//----------------------------------------------------
 /**
  * @brief reads info to buffer from file
  *
@@ -16,6 +17,7 @@
 */
 static int ReadBuf(const char * const file, char **buf);
 
+//----------------------------------------------------
 /**
  * @brief calculates size of the windows-saved file not bigger than 2GB (may not work properly on other OS)
  *
@@ -29,6 +31,7 @@ static int ReadBuf(const char * const file, char **buf);
 */
 static int GetFileSize(FILE *file);
 
+//----------------------------------------------------
 /**
  * @brief counts number of lines in buffer
  *
@@ -38,31 +41,36 @@ static int GetFileSize(FILE *file);
 */
 static int CntNewLine(const char *buf);
 
+//----------------------------------------------------
+
 int ReadText(const char * const file, const char ***text, char **buf) {
+
     assert (file);
     assert (text);
     assert (buf);
 
     if (!file) {
         fprintf(stderr, "ReadText: file null received\n");
+        // return INT_MAX;
     }
 
     if (!text) {
         fprintf(stderr, "ReadText: text null received\n");
+        // return INT_MAX;
     }
 
     if (!buf) {
         fprintf(stderr, "ReadText: buf null received\n");
+        // return INT_MAX;
     }
+    int n_lines = ReadBuf(file, buf);
 
-    ReadBuf(file, buf);
+    *text = (const char **) ParseLines(*buf, n_lines);
 
-    int new_lines = CntNewLine(*buf);
-
-    *text = (const char **) ParseLines(*buf);
-
-    return new_lines;
+    return n_lines;
 }
+
+//----------------------------------------------------
 
 int ReadBuf(const char * const file, char **buf) {
     assert (file);
@@ -88,18 +96,18 @@ int ReadBuf(const char * const file, char **buf) {
 
     fclose(fin);
 
-    return CntNewLine((const char *) buf);
+    return CntNewLine(*(const char **) buf);
 }
 
-char **ParseLines(char *buf) {
+//----------------------------------------------------
+
+char **ParseLines(char *buf, size_t n_lines) {
     assert (buf);
 
     if (!buf) {
         fprintf(stderr, "ParseLines: null pointer to buf received. Destroying the notebook.\n");
         return NULL;
     }
-
-    int n_lines = CntNewLine(buf);
 
     char **l_ptrs = (char **) calloc(n_lines + 1, sizeof(char *));
     char **l_ptrs_ansc = l_ptrs;
@@ -126,6 +134,8 @@ char **ParseLines(char *buf) {
         return l_ptrs;
 }
 
+//----------------------------------------------------
+
 void FreeText(void *text) {
     assert (text);
 
@@ -138,6 +148,8 @@ void FreeText(void *text) {
     free(text);
 }
 
+//----------------------------------------------------
+
 void FreeBuf(void *buf) {
     assert (buf);
 
@@ -148,6 +160,8 @@ void FreeBuf(void *buf) {
 
     free(buf);
 }
+
+//----------------------------------------------------
 
 void WriteText(const char * const file, const char * const mode, const char **text, int n_lines) {
     assert (file);
@@ -183,6 +197,8 @@ void WriteText(const char * const file, const char * const mode, const char **te
     fclose(fout);
 
 }
+
+//----------------------------------------------------
 
 void WriteBuf(const char * const file, const char * const mode, const char *buf, int n_lines) {
     assert (file);
@@ -222,6 +238,8 @@ void WriteBuf(const char * const file, const char * const mode, const char *buf,
     fclose(fout);
 }
 
+//----------------------------------------------------
+
 int GetFileSize(FILE *file) {
     assert (file);
 
@@ -236,6 +254,8 @@ int GetFileSize(FILE *file) {
 
     return res;
 }
+
+//----------------------------------------------------
 
 int CntNewLine(const char *buf) {
     assert (buf);

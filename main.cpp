@@ -8,23 +8,6 @@
 #include "text_buf.h"
 #include "my_sort.h"
 
-/*
-TODO
-я путаюсь как передавать строки в функции *(const char **)str           DONE (я лох палучаеццо)
-сделать скип знаков препинания                                          DONE
-БОЛЬШЕ const                                                            DONE
-вывод буфера                                                            DONE
-доки                                                                    DONE
-разбить на файлы                                                        DONE
-free                                                                    DONE
-а если файл прочитали в режиме без rb и размери не сходятся             posle laby
-сделать чтобы функции ретернили enum (особенно компараторы для ошибок)  saturday
-size_t                                                                  DONE
-тесты                                                                   posle laby
-сделать quick sort                                                      saturday
-delnotalpha (make it return enum)                                       posle laby
-*/
-
 const char * const MASTERPIECE = "static/onegin.txt";
 
 int main() {
@@ -35,7 +18,7 @@ int main() {
 
     // -------------------------------------------
 
-    qsort(text, new_lines, sizeof(char *), cmpStr);
+    BubbleSort(text, new_lines, sizeof(char *), cmpStr);
 
     WriteText("out.txt", "w", text, new_lines);
 
@@ -49,7 +32,7 @@ int main() {
 
     WriteBuf("out.txt", "a", buf, new_lines);
 
-    printf("__ OOps, something went not wrong__");
+    printf("__ OOps, something went not wrong__\n");
 
     FreeText(text);
     FreeBuf(buf);
