@@ -9,29 +9,89 @@
 
 // NOT FINISHED
 void QuickSort (void *data, int size, size_t el_size, int (*cmp) (const void *a, const void *b)) {
+
     assert (data);
     assert (size > 0);
     assert (el_size > 0);
     assert (cmp);
 
+
+    if (!data) {
+        fprintf(stderr, "QuickSort: null pointer received\n");
+        return ;
+    }
+
+    if (size <= 0) {
+        fprintf(stderr, "QuickSort: size of data array must be 0 or higher\n");
+        return ;
+    }
+
+    if (el_size <= 0) {
+        fprintf(stderr, "QuickSort: el_size <= n");
+        return ;
+    }
+
+    if (!cmp) {
+        fprintf(stderr, "QuickSort: null pointer to comparator received\n");
+        return ;
+    }
+
     qsort (data, size, el_size, cmp);
+
+    /*
+    Анекдот:
+
+    Журналисты пошли снимать сюжет в деревню. Они встретили фермера с двумя коровами и взяли у него интервью:
+    -Добрый вечер, такие большие коровы, сколько они едят сена в день?
+    -Какая из них? Черная или коричневая?
+    -Ну коричневая
+    -Несколько килограммов в день
+    -А черная?
+    -Несколько килограммов в день
+
+    Журналист смутился, но продолжил интервью.
+    -Сколько молока дают?
+    -Какая? Черная или коричневая?
+    -Черная
+    -Ну литра два
+    -А коричневая?
+    -Ну литра два
+
+    Журналист разозлился:
+    -ПОЧЕМУ ВЫ ПОСТОЯННО СПРАШИВАЕТЕ КАКАЯ КОРОВА, ЕСЛИ ОНИ ОДИНАКОВЫЕ?
+    -Потому что черная - моя
+    -А коричневая?
+    -Тоже моя
+
+    */
 
     return ;
 }
 
-// TODO quick_sort + return enum
 void BubbleSort (void *data, int size, size_t el_size, int (*cmp) (const void *a, const void *b)) {
 
     assert (data);
-    assert (size >= 0);
+    assert (size > 0);
+    assert (el_size > 0);
+    assert (cmp);
 
     if (!data) {
-        printf("BubbleSort: null pointer received\n");
+        fprintf(stderr, "BubbleSort: null pointer received\n");
         return ;
     }
 
-    if (size < 0) {
-        printf("BubbleSort: size of data array must be 0 or higher\n");
+    if (size <= 0) {
+        fprintf(stderr, "BubbleSort: size of data array must be 0 or higher\n");
+        return ;
+    }
+
+    if (el_size <= 0) {
+        fprintf(stderr, "BubbleSort: el_size <= n");
+        return ;
+    }
+
+    if (!cmp) {
+        fprintf(stderr, "BubbleSort: null pointer to comparator received\n");
         return ;
     }
 
@@ -41,7 +101,7 @@ void BubbleSort (void *data, int size, size_t el_size, int (*cmp) (const void *a
             if (cmp(GetAddress(data, j,     el_size),
                     GetAddress(data, j + 1, el_size)) > 0) {
 
-                Swap_(GetAddress(data, j,     el_size),
+                Swap(GetAddress(data, j,     el_size),
                       GetAddress(data, j + 1, el_size), sizeof(void *));
 
             }
@@ -49,19 +109,19 @@ void BubbleSort (void *data, int size, size_t el_size, int (*cmp) (const void *a
     }
 }
 
-// not very optimal
-void Swap_(void *aptr, void *bptr, int size) {
+// swaps your braincells when you try to understand what it does
+void Swap(void *aptr, void *bptr, int size) {
 
     assert(aptr);
     assert(bptr);
 
     if (!aptr) {
-        fprintf(stderr, "Swap_: null pointer to a\n");
+        fprintf(stderr, "Swap: null pointer to a\n");
         return ;
     }
 
     if (!bptr) {
-        fprintf(stderr, "Swap_: null pointer to b\n");
+        fprintf(stderr, "Swap: null pointer to b\n");
         return ;
     }
 

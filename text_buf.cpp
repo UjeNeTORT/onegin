@@ -6,9 +6,32 @@
 
 #include "text_buf.h"
 
+/**
+ * @brief reads info to buffer from file
+ *
+ * @param [in]  file filename
+ * @param [out] buf  buffer pointer
+ *
+ * @return number of lines in file
+*/
 static int ReadBuf(const char * const file, char **buf);
 
+/**
+ * @brief calculates size of the windows-saved file (may not work properly on other OS)
+ *
+ * @param [in] file pointer to a file
+ *
+ * @return file size in bytes
+*/
 static int GetFileSize(FILE *file);
+
+/**
+ * @brief counts number of lines in buffer
+ *
+ * @param [in] buf buffer
+ *
+ * @return number of \\ns in the buffer
+*/
 static int CntNewLine(const char *buf);
 
 int ReadText(const char * const file, const char ***text, char **buf) {
@@ -32,7 +55,7 @@ int ReadText(const char * const file, const char ***text, char **buf) {
 
     int new_lines = CntNewLine(*buf);
 
-    *text = ParseLines(*buf);
+    *text = (const char **) ParseLines(*buf);
 
     return new_lines;
 }
@@ -40,6 +63,22 @@ int ReadText(const char * const file, const char ***text, char **buf) {
 int ReadBuf(const char * const file, char **buf) {
     assert (file);
     assert (buf);
+    assert (*buf);
+
+    if (!file) {
+        fprintf(stderr, "ReadBuf: no file given\n");
+        // return INT_MAX;
+    }
+
+    if (!buf) {
+        fprintf(stderr, "ReadBuf: null pointer to buf\n");
+        // return INT_MAX;
+    }
+
+    if (!*buf) {
+        fprintf(stderr, "ReadBuf: buf contains null pointer\n");
+        // return INT_MAX;
+    }
 
     FILE *fin = fopen(file, "rb");
 
@@ -54,7 +93,7 @@ int ReadBuf(const char * const file, char **buf) {
     return CntNewLine((const char *) buf);
 }
 
-const char **ParseLines(char *buf) {
+char **ParseLines(char *buf) {
     assert (buf);
 
     if (!buf) {
@@ -69,7 +108,8 @@ const char **ParseLines(char *buf) {
 
     *l_ptrs_ansc++ = buf;
 
-    while (*buf)
+    // strchr is not suitable for this purpose
+    while (*buf) {
         if (*buf == '\r') {
             *buf++ = '\0';
             // skip \n after \r
@@ -83,12 +123,19 @@ const char **ParseLines(char *buf) {
         else {
             buf++;
         }
+     }
 
-        return (const char **) l_ptrs;
+        return l_ptrs;
 }
 
 void FreeText(void *text) {
     assert (text);
+
+    if (!text) {
+        fprintf(stderr, "FreeText: null pointer to text received");
+
+        return ;
+    }
 
     free(text);
 }
@@ -96,16 +143,27 @@ void FreeText(void *text) {
 void FreeBuf(void *buf) {
     assert (buf);
 
+    if (!buf) {
+        fprintf(stderr, "FreeBuf: null pointer to buf received");
+        return ;
+    }
+
     free(buf);
 }
 
 void WriteText(const char * const file, const char * const mode, const char **text, int n_lines) {
     assert (file);
     assert (text);
+    assert (mode);
     assert (n_lines >= 0);
 
     if (!file) {
         fprintf(stderr, "WriteText: null pointer to file received\n");
+        return ;
+    }
+
+    if (!mode) {
+        fprintf(stderr, "WriteText: no mode received");
         return ;
     }
 
@@ -133,6 +191,27 @@ void WriteBuf(const char * const file, const char * const mode, const char *buf,
     assert (buf);
     assert (n_lines >= 0);
 
+    if (!file) {
+        fprintf(stderr, "WriteBuf: null pointer to file received\n");
+        return ;
+    }
+
+    if (!mode) {
+        fprintf(stderr, "WriteBuf: no mode received");
+        return ;
+    }
+
+    if (!buf) {
+        fprintf(stderr, "WriteBuf: null pointer to buffer received\n");
+        return ;
+    }
+
+    if (n_lines < 0) {
+        fprintf(stderr, "WriteBuf: n_lines < 0\n");
+        return ;
+    }
+
+
     FILE *fout = fopen(file, mode);
 
     while (n_lines-- > 0) {
@@ -150,7 +229,7 @@ int GetFileSize(FILE *file) {
 
     if (!file) {
         fprintf(stderr, "GetFileSize: null instead of file received\n");
-        // return NULL;
+        // return INT_MAX;
     }
 
     fseek(file, 0, SEEK_END);
@@ -165,7 +244,7 @@ int CntNewLine(const char *buf) {
 
     if (!buf) {
         fprintf(stderr, "CntNewLine: null pointer to buffer received\n");
-        // return NULL;
+        // return INT_MAX;
     }
 
     int n_cnt = 0;
