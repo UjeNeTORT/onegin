@@ -17,11 +17,15 @@
 static int ReadBuf(const char * const file, char **buf);
 
 /**
- * @brief calculates size of the windows-saved file (may not work properly on other OS)
+ * @brief calculates size of the windows-saved file not bigger than 2GB (may not work properly on other OS)
+ *
  *
  * @param [in] file pointer to a file
  *
  * @return file size in bytes
+ *
+ * @details
+ * ONLY <= 2GB files accepted
 */
 static int GetFileSize(FILE *file);
 
@@ -63,7 +67,6 @@ int ReadText(const char * const file, const char ***text, char **buf) {
 int ReadBuf(const char * const file, char **buf) {
     assert (file);
     assert (buf);
-    assert (*buf);
 
     if (!file) {
         fprintf(stderr, "ReadBuf: no file given\n");
@@ -72,11 +75,6 @@ int ReadBuf(const char * const file, char **buf) {
 
     if (!buf) {
         fprintf(stderr, "ReadBuf: null pointer to buf\n");
-        // return INT_MAX;
-    }
-
-    if (!*buf) {
-        fprintf(stderr, "ReadBuf: buf contains null pointer\n");
         // return INT_MAX;
     }
 

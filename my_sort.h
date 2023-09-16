@@ -2,14 +2,20 @@
 #define MY_SORT_H
 
 /**
+ * @brief (NOT FINISHED) equivalent of standart qsort
+ *
  * @param [out] data    array to be sorted
  * @param [in]  size    amount of elements in data
  * @param [in]  el_size size of 1 element
  * @param [in]  cmp     function-comparator
+ *
+ *
 */
 void QuickSort  (void *data, int size, size_t el_size, int (*cmp) (const void *a, const void *b));
 
 /**
+ * @brief bubble sort but on qsort standarts
+ *
  * @param [out] data    array to be sorted
  * @param [in]  size    amount of elements in data
  * @param [in]  el_size size of 1 element
@@ -19,7 +25,6 @@ void BubbleSort (void *data, int size, size_t el_size, int (*cmp) (const void *a
 
 /**
  * @brief giga swap  (WORKS ONLY FOR 64-bit systems)
- *
  *
  * @param [in]  aptr pointer to a-variable
  * @param [in]  bptr pointer to b-variable

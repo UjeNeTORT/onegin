@@ -63,6 +63,7 @@ void QuickSort (void *data, int size, size_t el_size, int (*cmp) (const void *a,
     -А коричневая?
     -Тоже моя
 
+    (смех в зале)
     */
 
     return ;
@@ -150,17 +151,18 @@ void Swap(void *aptr, void *bptr, int size) {
 
 
 int cmpStr(const void *str1, const void *str2) {
+
     assert(str1);
     assert(str2);
 
     if (!str1) {
-        fprintf(stderr, "cmpStr: null pointer to a-str received");
-        // return NULL;
+        fprintf(stderr, "cmpStr: null pointer to a-str received\n");
+        // return INT_MAX;
     }
 
     if (!str2) {
-        fprintf(stderr, "cmpStr: null pointer to b-str received");
-        // return NULL;
+        fprintf(stderr, "cmpStr: null pointer to b-str received\n");
+        // return INT_MAX;
     }
 
     const char *s1 = *(char * const *) str1;
@@ -178,17 +180,18 @@ int cmpStr(const void *str1, const void *str2) {
 }
 
 int cmpRStr(const void *str1, const void *str2) {
+
     assert (str1);
     assert (str2);
 
     if (!str1) {
-        fprintf(stderr, "cmpStr: null pointer to a-str received");
-
+        fprintf(stderr, "cmpRStr: null pointer to a-str received\n");
+        // return INT_MAX;
     }
 
     if (!str2) {
-        fprintf(stderr, "cmpStr: null pointer to b-str received");
-
+        fprintf(stderr, "cmpRStr: null pointer to b-str received\n");
+        // return INT_MAX;
     }
 
 
@@ -223,6 +226,7 @@ int cmpRStr(const void *str1, const void *str2) {
 }
 
 void *GetAddress(void *arr, int index, size_t el_size) {
+
     assert (arr);
     assert (index >= 0);
     assert (el_size > 0);
@@ -246,6 +250,7 @@ void *GetAddress(void *arr, int index, size_t el_size) {
 }
 
 const char *DelNotAlpha(const char *str, int len) {
+
     assert (str);
     assert (len >= 0);
 
@@ -267,6 +272,7 @@ const char *DelNotAlpha(const char *str, int len) {
 }
 
 const char *DelNotAlphaR(const char *str, int len) {
+
     assert(str);
     assert (len >= 0);
 

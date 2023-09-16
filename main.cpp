@@ -22,6 +22,7 @@ free                                                                    DONE
 size_t                                                                  DONE
 тесты                                                                   posle laby
 сделать quick sort                                                      saturday
+delnotalpha (make it return enum)                                       posle laby
 */
 
 const char * const MASTERPIECE = "static/onegin.txt";
@@ -40,7 +41,7 @@ int main() {
 
     // -------------------------------------------
 
-    BubbleSort(text, new_lines, sizeof(char *), cmpRStr);
+    qsort(text, new_lines, sizeof(char *), cmpRStr);
 
     WriteText("out.txt", "a", text, new_lines);
 
@@ -72,8 +73,4 @@ int main() {
 |   | :       \   \ .'   '---'         '---'      \   \ .'   :   : :-'  |  | ,'        `--'---'  ;   : ;--'  '   : |    |  | ,'
 `---'.|        `---`                               `---`     |   |.'    `--''                    |   ,/      ;   |,'    `--''
   `---`                                                      `---'                               '---'       '---'
-
-
 */
-
-
